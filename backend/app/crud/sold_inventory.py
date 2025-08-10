@@ -1,14 +1,13 @@
 from sqlalchemy.orm import Session
 from backend.app import models, schemas
+import backend.app.crud
 
 def create(db: Session, current_inventory_id: int, sale_location: str):
-    item = db.query(models.current_inventory.CurrentInventory).filters(models.current_inventory.CurrentInventory.id == current_inventory_id).first()
-    if not item:
-        return None # Handled in routes
+    item = db.query(models.CurrentInventory).filter(models.CurrentInventory.id == current_inventory_id).first()
 
     sold_item = models.sold_inventory.SoldInventory(
         name=item.name,
-        description=item.description,
+        description=str(item.description),
         type=item.type,
         age=item.age,
         purchase_price=item.purchase_price,
@@ -27,13 +26,13 @@ def get_all(db: Session, skip: int = 0, limit: int = 50):
     return db.query(models.SoldInventory).offset(skip).limit(limit).all()
 
 def get_by_id(db: Session, sold_id: int):
-    return db.query(models.SoldInventory).filters(models.SoldInventory.id == sold_id).first()
+    return db.query(models.SoldInventory).filter(models.SoldInventory.id == sold_id).first()
 
 def get_by_name(db: Session, name: str):
-    return db.query(models.SoldInventory).filters(models.SoldInventory.name == name).first()
+    return db.query(models.SoldInventory).filter(models.SoldInventory.name == name).first()
 
 def get_by_sale_location(db: Session, sale_location: str):
-    return db.query(models.SoldInventory).filters(models.SoldInventory.sale_location == sale_location).first()
+    return db.query(models.SoldInventory).filter(models.SoldInventory.sale_location == sale_location).first()
 
 def update(db: Session, item_id: int, updated_items: schemas.sold_inventory.Update):
     sold_item = db.query(models.SoldInventory).filter(models.SoldInventory.id == item_id).first()

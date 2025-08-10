@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 from backend.app import models, schemas
 
 def create(db: Session, item: schemas.current_inventory.Create):
+    if get_by_name(db, item.name):
+        return None
+
     db_item = models.CurrentInventory(
         name=item.name,
         description=item.description,
@@ -11,6 +14,7 @@ def create(db: Session, item: schemas.current_inventory.Create):
         sale_price=item.sale_price,
         image=item.image.filename if item.image else None
     )
+
     db.add(db_item)
     db.commit()
     db.refresh(db_item)

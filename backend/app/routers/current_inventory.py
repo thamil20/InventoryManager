@@ -12,13 +12,13 @@ router = APIRouter(
 @router.post('/', response_model=schemas.current_inventory.Response)
 def create_item(item: schemas.current_inventory.Create, db: Session = Depends(get_db)):
     db_item = crud.current_inventory.create(db, item)
-    if db_item:
+    if not db_item:
         raise HTTPException(status_code=400, detail="Item already exists")
-    return crud.current_inventory.create(db=db, item=item)
+    return db_item
 
 @router.get('/', response_model=List[schemas.current_inventory.Response])
 def get_all(skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
-    return crud.expenses.get_all(db=db, skip=skip, limit=limit)
+    return crud.create_inventory.get_all(db=db, skip=skip, limit=limit)
 
 @router.get("/{item_id}", response_model=schemas.current_inventory.Response)
 def get_by_id(item_id: int, db: Session = Depends(get_db)):
